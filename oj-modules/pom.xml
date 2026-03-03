@@ -8,23 +8,40 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <artifactId>oj</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <artifactId>oj-modules</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>oj-system</module>
         <module>oj-friend</module>
         <module>oj-job</module>
         <module>oj-judge</module>
     </modules>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>oj-common-core</artifactId>
+            <version>${oj-common-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>oj-common-security</artifactId>
+            <version>${oj-common-security.version}</version>
+        </dependency>
     </dependencies>
+
 </project>
