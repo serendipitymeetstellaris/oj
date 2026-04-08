@@ -5,5 +5,5 @@ import org.example.common.core.domain.R;
 
 public interface ISysUserService {
 
-    R<Void> login(String userAccount, String password);
+    R<String> login(String userAccount, String password);
 }

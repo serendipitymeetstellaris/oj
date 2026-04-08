@@ -1,1 +1,2 @@
-org.example.common.security.GlobalExceptionHandler
+org.example.common.security.handler.GlobalExceptionHandler
+org.example.common.security.service.TokenService

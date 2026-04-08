@@ -1,4 +1,4 @@
-package org.example.common.security;
+package org.example.common.security.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
