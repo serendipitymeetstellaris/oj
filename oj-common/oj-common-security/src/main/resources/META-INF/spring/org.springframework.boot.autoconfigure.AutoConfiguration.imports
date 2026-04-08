@@ -1,2 +1,4 @@
 org.example.common.security.handler.GlobalExceptionHandler
 org.example.common.security.service.TokenService
+org.example.common.security.config.WebMvcConfig
+org.example.common.security.interceptor.TokenInterceptor

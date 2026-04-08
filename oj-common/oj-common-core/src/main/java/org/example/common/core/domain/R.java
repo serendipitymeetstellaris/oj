@@ -8,11 +8,11 @@ import org.example.common.core.enums.ResultCode;
 @Setter
 public class R<T> {
 
-    private int code;
+    private int code;  //定义一些固定的code，前后端商量好的   0  1  请求成功  常量  2  3  枚举
 
-    private String msg;
+    private String msg;  //?  通常是code的辅助说明  一个code  对应一个msg
 
-    private T data;
+    private T data;  //请求某个接口返回的数据list  SysUser  泛型
 
 
     public static <T> R<T> ok() {
@@ -25,6 +25,10 @@ public class R<T> {
 
     public static <T> R<T> fail() {
         return assembleResult(null, ResultCode.FAILED);
+    }
+
+    public static <T> R<T> fail(int code, String msg) {
+        return assembleResult(code, msg, null);
     }
 
     /**
@@ -45,5 +49,12 @@ public class R<T> {
         r.setMsg(resultCode.getMsg());
         return r;
     }
-}
 
+    private static <T> R<T> assembleResult(int code, String msg, T data) {
+        R<T> r = new R<>();
+        r.setCode(code);
+        r.setData(data);
+        r.setMsg(msg);
+        return r;
+    }
+}

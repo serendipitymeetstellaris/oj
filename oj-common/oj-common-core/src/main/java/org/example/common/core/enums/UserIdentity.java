@@ -9,11 +9,11 @@ public enum UserIdentity {
 
     ADMIN(2, "管理员");
 
-    private int value;
+    private Integer value;
 
-    private String des; //描述
+    private String des;
 
-    UserIdentity(int value, String des) {
+    UserIdentity(Integer value, String des) {
         this.value = value;
         this.des = des;
     }

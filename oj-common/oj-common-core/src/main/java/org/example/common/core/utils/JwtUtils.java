@@ -1,8 +1,9 @@
-package org.example.common.security.utils;
+package org.example.common.core.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.example.common.core.constants.JwtConstants;
 
 import java.util.Map;
 
@@ -29,5 +30,21 @@ public class JwtUtils {
      */
     public static Claims parseToken(String token, String secret) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+
+    public static String getUserKey(Claims claims) {
+        return toStr(claims.get(JwtConstants.LOGIN_USER_KEY));
+    }
+
+    public static String getUserId(Claims claims) {
+        return toStr(claims.get(JwtConstants.LOGIN_USER_ID));
+    }
+
+    private static String toStr(Object value) {
+        if (value == null) {
+            return "";
+        }
+        return value.toString();
     }
 }
