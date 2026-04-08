@@ -5,6 +5,6 @@ spring:
   application:
     name: oj-system
   datasource:
-    url: jdbc:mysql://192.168.100.129:3306/oj_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://159.75.127.9:3306/oj_dev?useUnicode=true&characterEncoding=utf8&useSSL=true&serverTimezone=GMT%2B8
     username: ojtest
     password: 123456
