@@ -1,13 +1,22 @@
 package org.example.common.security.handler;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.core.domain.R;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.security.exception.ServiceException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器
@@ -34,6 +43,22 @@ public class GlobalExceptionHandler
         ResultCode resultCode = e.getResultCode();
         log.error("请求地址'{}',发生业务异常: {}", requestURI, resultCode.getMsg(), e);
         return R.fail(resultCode);
+    }
+
+    @ExceptionHandler(BindException.class)
+    public R<Void> handleBindException(BindException e) {
+        log.error(e.getMessage());
+        String message = join(e.getAllErrors(),
+                DefaultMessageSourceResolvable::getDefaultMessage, ", ");
+        return R.fail(ResultCode.FAILED_PARAMS_VALIDATE.getCode(), message);
+    }
+
+    private <E> String join(Collection<E> collection, Function<E, String>
+            function, CharSequence delimiter) {
+        if (CollUtil.isEmpty(collection)) {
+            return StrUtil.EMPTY;
+        }
+        return collection.stream().map(function).filter(Objects::nonNull).collect(Collectors.joining(delimiter));
     }
 
     /**
