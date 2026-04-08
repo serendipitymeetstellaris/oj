@@ -1,0 +1,2 @@
+org.example.common.redis.service.RedisService
+org.example.common.redis.config.RedisConfig
