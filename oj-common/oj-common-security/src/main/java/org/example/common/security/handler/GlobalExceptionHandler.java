@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.core.domain.R;
 import org.example.common.core.enums.ResultCode;
+import org.example.common.security.exception.ServiceException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,6 +28,13 @@ public class GlobalExceptionHandler
         return R.fail(ResultCode.ERROR);
     }
 
+    @ExceptionHandler(ServiceException.class)
+    public R<?> handleServiceException(ServiceException e, HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        ResultCode resultCode = e.getResultCode();
+        log.error("请求地址'{}',发生业务异常: {}", requestURI, resultCode.getMsg(), e);
+        return R.fail(resultCode);
+    }
 
     /**
      * 拦截运行时异常
