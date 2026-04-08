@@ -8,7 +8,7 @@ import org.example.common.core.enums.UserIdentity;
 import org.example.common.security.exception.ServiceException;
 import org.example.common.security.service.TokenService;
 import org.example.system.domain.SysUser;
-import org.example.system.domain.SysUserSaveDTO;
+import org.example.system.domain.dto.SysUserSaveDTO;
 import org.example.system.mapper.SysUserMapper;
 import org.example.system.service.ISysUserService;
 import org.example.system.util.BCryptUtils;
