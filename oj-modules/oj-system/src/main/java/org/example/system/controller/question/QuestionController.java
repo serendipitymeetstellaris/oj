@@ -5,7 +5,9 @@ import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.TableDataInfo;
 import org.example.system.domain.question.dto.QuestionAddDTO;
+import org.example.system.domain.question.dto.QuestionEditDTO;
 import org.example.system.domain.question.dto.QuestionQueryDTO;
+import org.example.system.domain.question.vo.QuestionDetailVO;
 import org.example.system.service.question.IQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,5 +28,20 @@ public class QuestionController extends BaseController {
     @PostMapping("/add")
     public R<Void> add(@RequestBody QuestionAddDTO questionAddDTO) {
         return toR(questionService.add(questionAddDTO));
+    }
+
+    @GetMapping("/detail")
+    public R<QuestionDetailVO> detail(Long questionId) {
+        return R.ok(questionService.detail(questionId));
+    }
+
+    @PutMapping("/edit")
+    public R<Void> edit(@RequestBody QuestionEditDTO questionEditDTO) {
+        return toR(questionService.edit(questionEditDTO));
+    }
+
+    @DeleteMapping("/delete")
+    public R<Void> delete(Long questionId) {
+        return toR(questionService.delete(questionId));
     }
 }
