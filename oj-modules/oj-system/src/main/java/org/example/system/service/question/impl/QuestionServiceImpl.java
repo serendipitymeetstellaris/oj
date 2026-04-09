@@ -43,7 +43,8 @@ public class QuestionServiceImpl implements IQuestionService {
             questionQueryDTO.setExcludeIdSet(excludeIdSet);
         }
         PageHelper.startPage(questionQueryDTO.getPageNum(), questionQueryDTO.getPageSize());
-        return questionMapper.selectQuestionList(questionQueryDTO);
+        List<QuestionVO> questionVOList = questionMapper.selectQuestionList(questionQueryDTO);
+        return questionVOList;
     }
 
     @Override

@@ -126,6 +126,15 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
         return examMapper.updateById(exam);
     }
 
+    @Override
+    public int delete(Long examId) {
+        Exam exam = getExam(examId);
+        checkExam(exam);
+        examQuestionMapper.delete(new LambdaQueryWrapper<ExamQuestion>()
+                .eq(ExamQuestion::getExamId, examId));
+        return examMapper.deleteById(exam);
+    }
+
     private void checkExamSaveParams(ExamAddDTO examSaveDTO, Long examId) {
         //1、竞赛标题是否重复进行判断   2、竞赛开始、结束时间进行判断
         List<Exam> examList = examMapper
