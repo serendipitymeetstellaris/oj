@@ -11,4 +11,6 @@ import java.util.List;
 public interface QuestionMapper extends BaseMapper<Question> {
 
     List<QuestionVO> selectQuestionList(QuestionQueryDTO questionQueryDTO);
+
+    List<QuestionVO> selectQuestionListByIds(List<Long> questionIdList);
 }

@@ -2,8 +2,10 @@ package org.example.system.service.question.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
+import org.example.common.core.constants.Constants;
 import org.example.common.core.domain.TableDataInfo;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.security.exception.ServiceException;
@@ -18,7 +20,10 @@ import org.example.system.service.question.IQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -29,6 +34,14 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public List<QuestionVO> list(QuestionQueryDTO questionQueryDTO) {
+        String excludeIdStr = questionQueryDTO.getExcludeIdStr();
+        if (StrUtil.isNotEmpty(excludeIdStr)) {
+            String[] excludeIdArr = excludeIdStr.split(Constants.SPLIT_SEM);
+            Set<Long> excludeIdSet = Arrays.stream(excludeIdArr)
+                    .map(Long::valueOf)
+                    .collect(Collectors.toSet());
+            questionQueryDTO.setExcludeIdSet(excludeIdSet);
+        }
         PageHelper.startPage(questionQueryDTO.getPageNum(), questionQueryDTO.getPageSize());
         return questionMapper.selectQuestionList(questionQueryDTO);
     }
