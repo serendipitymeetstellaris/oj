@@ -3,13 +3,11 @@ package org.example.system.test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.common.redis.service.RedisService;
-import org.example.system.domain.SysUser;
+import org.example.system.domain.sysuser.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/test")

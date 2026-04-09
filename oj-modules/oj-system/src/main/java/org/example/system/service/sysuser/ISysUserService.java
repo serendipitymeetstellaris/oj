@@ -1,9 +1,9 @@
-package org.example.system.service;
+package org.example.system.service.sysuser;
 
 
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.vo.LoginUserVO;
-import org.example.system.domain.dto.SysUserSaveDTO;
+import org.example.system.domain.sysuser.dto.SysUserSaveDTO;
 
 public interface ISysUserService {
 

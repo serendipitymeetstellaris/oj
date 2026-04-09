@@ -1,4 +1,4 @@
-package org.example.system.service.impl;
+package org.example.system.service.sysuser.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
@@ -11,10 +11,10 @@ import org.example.common.core.enums.ResultCode;
 import org.example.common.core.enums.UserIdentity;
 import org.example.common.security.exception.ServiceException;
 import org.example.common.security.service.TokenService;
-import org.example.system.domain.SysUser;
-import org.example.system.domain.dto.SysUserSaveDTO;
-import org.example.system.mapper.SysUserMapper;
-import org.example.system.service.ISysUserService;
+import org.example.system.domain.sysuser.SysUser;
+import org.example.system.domain.sysuser.dto.SysUserSaveDTO;
+import org.example.system.mapper.sysuser.SysUserMapper;
+import org.example.system.service.sysuser.ISysUserService;
 import org.example.system.util.BCryptUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

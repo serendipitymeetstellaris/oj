@@ -1,4 +1,4 @@
-package org.example.system.controller;
+package org.example.system.controller.sysuser;
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +11,10 @@ import org.example.common.core.constants.HttpConstants;
 import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.vo.LoginUserVO;
-import org.example.system.domain.dto.LoginDTO;
-import org.example.system.domain.dto.SysUserSaveDTO;
-import org.example.system.domain.SysUserVO;
-import org.example.system.service.ISysUserService;
+import org.example.system.domain.sysuser.dto.LoginDTO;
+import org.example.system.domain.sysuser.dto.SysUserSaveDTO;
+import org.example.system.domain.sysuser.vo.SysUserVO;
+import org.example.system.service.sysuser.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
