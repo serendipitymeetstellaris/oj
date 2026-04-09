@@ -7,5 +7,7 @@ import lombok.Setter;
 @Setter
 public class LoginUser {
 
+    private String nickName; //用户昵称
+
     private Integer identity; //1.表示普通用户  2.表示管理员用户
 }

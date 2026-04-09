@@ -1,8 +1,12 @@
 package org.example.system.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.example.common.core.constants.HttpConstants;
+import org.example.common.core.domain.LoginUser;
 import org.example.common.core.domain.R;
+import org.example.common.core.domain.vo.LoginUserVO;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.core.enums.UserIdentity;
 import org.example.common.security.exception.ServiceException;
@@ -37,12 +41,12 @@ public class SysUserServiceImpl implements ISysUserService {
         //通过账号去数据库中查询，对应的用户信息
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
         SysUser sysUser = sysUserMapper.selectOne(queryWrapper
-                .select(SysUser::getUserId, SysUser::getPassword).eq(SysUser::getUserAccount, userAccount));
+                .select(SysUser::getUserId, SysUser::getPassword, SysUser::getNickName).eq(SysUser::getUserAccount, userAccount));
         if (sysUser == null) {
             return R.fail(ResultCode.FAILED_USER_NOT_EXISTS);
         }
         if (BCryptUtils.matchesPassword(password, sysUser.getPassword())) {
-            return R.ok(tokenService.createToken(sysUser.getUserId(), secret, UserIdentity.ADMIN.getValue()));
+            return R.ok(tokenService.createToken(sysUser.getUserId(), secret, UserIdentity.ADMIN.getValue(), sysUser.getNickName()));
         }
         return R.fail(ResultCode.FAILED_LOGIN);
     }
@@ -62,5 +66,19 @@ public class SysUserServiceImpl implements ISysUserService {
         sysUser.setUserAccount(sysUserSaveDTO.getUserAccount());
         sysUser.setPassword(BCryptUtils.encryptPassword(sysUserSaveDTO.getPassword()));
         return sysUserMapper.insert(sysUser);
+    }
+
+    @Override
+    public R<LoginUserVO> info(String token) {
+        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
+            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
+        }
+        LoginUser loginUser = tokenService.getLoginUser(token, secret);
+        if (loginUser == null) {
+            return R.fail();
+        }
+        LoginUserVO loginUserVO = new LoginUserVO();
+        loginUserVO.setNickName(loginUser.getNickName());
+        return R.ok(loginUserVO);
     }
 }

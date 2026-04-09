@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.example.common.core.constants.HttpConstants;
 import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;
+import org.example.common.core.domain.vo.LoginUserVO;
 import org.example.system.domain.dto.LoginDTO;
 import org.example.system.domain.dto.SysUserSaveDTO;
 import org.example.system.domain.SysUserVO;
@@ -32,6 +34,11 @@ public class SysUserController extends BaseController {
     @ApiResponse(responseCode = "3103", description = "用户名或密码错误")
     public R<String> login(@RequestBody LoginDTO loginDTO) {
         return sysUserService.login(loginDTO.getUserAccount(), loginDTO.getPassword());
+    }
+
+    @GetMapping("/info")
+    public R<LoginUserVO> info(@RequestHeader(HttpConstants.AUTHENTICATION) String token) {
+        return sysUserService.info(token);
     }
 
     @PostMapping("/add")
