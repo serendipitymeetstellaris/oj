@@ -20,7 +20,6 @@ public class ExamVO {
 
     private Integer status;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String createName;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
