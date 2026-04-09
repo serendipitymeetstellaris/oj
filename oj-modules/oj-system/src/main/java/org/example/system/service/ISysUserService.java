@@ -12,4 +12,6 @@ public interface ISysUserService {
     int add(SysUserSaveDTO sysUserSaveDTO);
 
     R<LoginUserVO> info(String token);
+
+    boolean logout(String token);
 }
