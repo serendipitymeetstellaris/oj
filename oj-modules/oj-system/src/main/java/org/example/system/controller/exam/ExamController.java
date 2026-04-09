@@ -5,6 +5,7 @@ import org.example.common.core.domain.R;
 import org.example.common.core.domain.TableDataInfo;
 import org.example.system.domain.exam.dto.ExamAddDTO;
 import org.example.system.domain.exam.dto.ExamQueryDTO;
+import org.example.system.domain.exam.dto.ExamQuestAddDTO;
 import org.example.system.service.exam.IExamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
