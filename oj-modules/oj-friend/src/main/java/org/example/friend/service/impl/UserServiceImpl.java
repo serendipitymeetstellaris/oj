@@ -5,6 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.example.common.core.constants.CacheConstants;
 import org.example.common.core.constants.Constants;
+import org.example.common.core.constants.HttpConstants;
+import org.example.common.core.domain.LoginUser;
+import org.example.common.core.domain.R;
+import org.example.common.core.domain.vo.LoginUserVO;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.core.enums.UserIdentity;
 import org.example.common.core.enums.UserStatus;
@@ -91,7 +95,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String codeLogin(String phone, String code) {
-        checkCode(phone, code);
+//        checkCode(phone, code);
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getPhone, phone));
         if (user == null) {  //新用户
             //注册逻辑
@@ -100,7 +104,7 @@ public class UserServiceImpl implements IUserService {
             user.setStatus(UserStatus.Normal.getValue());
             userMapper.insert(user);
         }
-        return tokenService.createToken(user.getUserId(), secret, UserIdentity.ORDINARY.getValue(), user.getNickName());
+        return tokenService.createToken(user.getUserId(), secret, UserIdentity.ORDINARY.getValue(), user.getNickName(), user.getHeadImage());
 //        if (user != null) {  //说明是老用户
 //            String phoneCodeKey = getPhoneCodeKey(phone);
 //            String cacheCode = redisService.getCacheObject(phoneCodeKey, String.class);
@@ -127,6 +131,29 @@ public class UserServiceImpl implements IUserService {
         }
         //验证码比对成功
         redisService.deleteObject(phoneCodeKey);
+    }
+
+    @Override
+    public boolean logout(String token) {
+        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
+            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
+        }
+        return tokenService.deleteLoginUser(token, secret);
+    }
+
+    @Override
+    public R<LoginUserVO> info(String token) {
+        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
+            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
+        }
+        LoginUser loginUser = tokenService.getLoginUser(token, secret);
+        if (loginUser == null) {
+            return R.fail();
+        }
+        LoginUserVO loginUserVO = new LoginUserVO();
+        loginUserVO.setNickName(loginUser.getNickName());
+        loginUserVO.setHeadImage(loginUser.getHeadImage());
+        return R.ok(loginUserVO);
     }
 
     public static boolean checkPhone(String phone) {
