@@ -1,4 +1,4 @@
-package org.example.friend.domain;
+package org.example.friend.domain.user;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

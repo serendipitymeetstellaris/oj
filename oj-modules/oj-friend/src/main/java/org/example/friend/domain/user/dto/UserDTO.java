@@ -1,4 +1,4 @@
-package org.example.friend.domain.dto;
+package org.example.friend.domain.user.dto;
 
 import lombok.Getter;
 import lombok.Setter;

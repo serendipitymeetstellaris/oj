@@ -1,4 +1,4 @@
-package org.example.friend.service.impl;
+package org.example.friend.service.user.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -16,10 +16,10 @@ import org.example.common.message.service.AliSmsService;
 import org.example.common.redis.service.RedisService;
 import org.example.common.security.exception.ServiceException;
 import org.example.common.security.service.TokenService;
-import org.example.friend.domain.User;
-import org.example.friend.domain.dto.UserDTO;
-import org.example.friend.mapper.UserMapper;
-import org.example.friend.service.IUserService;
+import org.example.friend.domain.user.User;
+import org.example.friend.domain.user.dto.UserDTO;
+import org.example.friend.mapper.user.UserMapper;
+import org.example.friend.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

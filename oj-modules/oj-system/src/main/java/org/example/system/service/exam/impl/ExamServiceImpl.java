@@ -18,6 +18,7 @@ import org.example.system.domain.exam.vo.ExamDetailVO;
 import org.example.system.domain.exam.vo.ExamVO;
 import org.example.system.domain.question.Question;
 import org.example.system.domain.question.vo.QuestionVO;
+import org.example.system.mannger.ExamCacheManager;
 import org.example.system.mapper.exam.ExamMapper;
 import org.example.system.mapper.exam.ExamQuestionMapper;
 import org.example.system.mapper.question.QuestionMapper;
@@ -41,6 +42,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
 
     @Autowired
     private ExamQuestionMapper examQuestionMapper;
+
+    @Autowired
+    private ExamCacheManager examCacheManager;
 
     @Override
     public List<ExamVO> list(ExamQueryDTO examQueryDTO) {
@@ -140,12 +144,18 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     public int publish(Long examId) {
         Exam exam = getExam(examId);
         //select count(0) from tb_exam_question where exam_id = #{examId}
+        if (exam.getEndTime().isBefore(LocalDateTime.now())) {
+            throw new ServiceException(ResultCode.EXAM_IS_FINISH);
+        }
         Long count = examQuestionMapper
                 .selectCount(new LambdaQueryWrapper<ExamQuestion>().eq(ExamQuestion::getExamId, examId));
         if (count == null || count <= 0) {
             throw new ServiceException(ResultCode.EXAM_NOT_HAS_QUESTION);
         }
         exam.setStatus(Constants.TRUE);
+
+        //要将新发布的竞赛数据存储到redis   e:t:l  e:d:examId
+        examCacheManager.addCache(exam);
         return examMapper.updateById(exam);
     }
 
@@ -153,7 +163,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     public int cancelPublish(Long examId) {
         Exam exam = getExam(examId);
         checkExam(exam);
+        if (exam.getEndTime().isBefore(LocalDateTime.now())) {
+            throw new ServiceException(ResultCode.EXAM_IS_FINISH);
+        }
         exam.setStatus(Constants.FALSE);
+        examCacheManager.deleteCache(examId);
         return examMapper.updateById(exam);
     }
 

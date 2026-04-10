@@ -1,8 +1,8 @@
-package org.example.friend.service;
+package org.example.friend.service.user;
 
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.vo.LoginUserVO;
-import org.example.friend.domain.dto.UserDTO;
+import org.example.friend.domain.user.dto.UserDTO;
 
 public interface IUserService {
 

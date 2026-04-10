@@ -53,6 +53,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>oj-common-mybatis</artifactId>
             <version>${oj-common-mybatis.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

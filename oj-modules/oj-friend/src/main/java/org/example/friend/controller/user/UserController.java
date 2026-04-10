@@ -1,11 +1,11 @@
-package org.example.friend.controller;
+package org.example.friend.controller.user;
 
 import org.example.common.core.constants.HttpConstants;
 import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.vo.LoginUserVO;
-import org.example.friend.domain.dto.UserDTO;
-import org.example.friend.service.IUserService;
+import org.example.friend.domain.user.dto.UserDTO;
+import org.example.friend.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
