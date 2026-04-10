@@ -34,5 +34,11 @@
             <artifactId>oj-common-elasticsearch</artifactId>
             <version>${oj-common-elasticsearch.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>oj-common-file</artifactId>
+            <version>${oj-common-file.version}</version>
+        </dependency>
     </dependencies>
 </project>

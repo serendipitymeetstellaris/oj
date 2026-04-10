@@ -1,0 +1,3 @@
+org.example.common.file.config.OSSConfig
+org.example.common.file.service.OSSService
+org.example.common.file.config.OSSProperties

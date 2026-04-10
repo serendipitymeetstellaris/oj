@@ -9,6 +9,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <module>oj-modules</module>
         <module>oj-common</module>
         <module>oj-gateway</module>
+        <module>oj-common/oj-common-file</module>
     </modules>
 
     <parent>
@@ -39,10 +40,15 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <oj-common-mybatis.version>1.0-SNAPSHOT</oj-common-mybatis.version>
         <oj-common-message.version>1.0-SNAPSHOT</oj-common-message.version>
         <oj-common-elasticsearch.version>1.0-SNAPSHOT</oj-common-elasticsearch.version>
+        <oj-common-file.version>1.0-SNAPSHOT</oj-common-file.version>
         <springdoc-openapi.version>2.2.0</springdoc-openapi.version>
         <pagehelper.boot.version>2.0.0</pagehelper.boot.version>
         <xxl-job.version>2.4.0</xxl-job.version>
         <transmittable-thread-local.version>2.14.4</transmittable-thread-local.version>
+        <javax-xml-bind.version>2.3.1</javax-xml-bind.version>
+        <javax-activation.version>1.1.1</javax-activation.version>
+        <org-glassfish-jaxb.version>2.3.3</org-glassfish-jaxb.version>
+        <aliyun-oss.version>3.17.4</aliyun-oss.version>
     </properties>
 
     <dependencies>
