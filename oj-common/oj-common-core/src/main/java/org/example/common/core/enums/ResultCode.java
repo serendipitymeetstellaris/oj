@@ -52,7 +52,13 @@ public enum ResultCode {
 
     EXAM_IS_FINISH                      (3207, "竞赛已经结束不能进行操作"),
 
-    USER_EXAM_HAS_ENTER                 (3301, "用户已经报过名，无需重复报名");
+    EXAM_IS_PUBLISH                     (3208, "竞赛已经发布不能进行编辑、删除操作"),
+
+    USER_EXAM_HAS_ENTER                 (3301, "用户已经报过名，无需重复报名"),
+
+    FAILED_FIRST_QUESTION               (3501, "当前题目已经是第一题了哦"),
+
+    FAILED_LAST_QUESTION                (3502, "当前题目已经是最后一题了哦");
 
     private int code;
 

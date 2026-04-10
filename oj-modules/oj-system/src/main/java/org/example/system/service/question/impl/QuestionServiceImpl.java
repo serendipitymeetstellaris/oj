@@ -6,15 +6,17 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import org.example.common.core.constants.Constants;
-import org.example.common.core.domain.TableDataInfo;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.security.exception.ServiceException;
 import org.example.system.domain.question.Question;
 import org.example.system.domain.question.dto.QuestionAddDTO;
 import org.example.system.domain.question.dto.QuestionEditDTO;
 import org.example.system.domain.question.dto.QuestionQueryDTO;
+import org.example.system.domain.question.es.QuestionES;
 import org.example.system.domain.question.vo.QuestionDetailVO;
 import org.example.system.domain.question.vo.QuestionVO;
+import org.example.system.elasticsearch.QuestionRepository;
+import org.example.system.mannger.QuestionCacheManager;
 import org.example.system.mapper.question.QuestionMapper;
 import org.example.system.service.question.IQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,13 @@ public class QuestionServiceImpl implements IQuestionService {
     @Autowired
     private QuestionMapper questionMapper;
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private QuestionCacheManager questionCacheManager;
+
+    //rrTTT   1821828072921452500
     @Override
     public List<QuestionVO> list(QuestionQueryDTO questionQueryDTO) {
         String excludeIdStr = questionQueryDTO.getExcludeIdStr();
@@ -45,10 +54,16 @@ public class QuestionServiceImpl implements IQuestionService {
         PageHelper.startPage(questionQueryDTO.getPageNum(), questionQueryDTO.getPageSize());
         List<QuestionVO> questionVOList = questionMapper.selectQuestionList(questionQueryDTO);
         return questionVOList;
+        //questionVOList == null || questionVOList.isEmpty()
+//        if (CollectionUtil.isEmpty(questionVOList)) {
+//            return TableDataInfo.empty();
+//        }
+//        new PageInfo<>(questionVOList).getTotal(); //获取符合查询条件的数据的总数
+//        return TableDataInfo.success(questionVOList, questionVOList.size());
     }
 
     @Override
-    public int add(QuestionAddDTO questionAddDTO) {
+    public boolean add(QuestionAddDTO questionAddDTO) {
         List<Question> questionList = questionMapper.selectList(new LambdaQueryWrapper<Question>()
                 .eq(Question::getTitle, questionAddDTO.getTitle()));
         if (CollectionUtil.isNotEmpty(questionList)) {
@@ -56,7 +71,15 @@ public class QuestionServiceImpl implements IQuestionService {
         }
         Question question = new Question();
         BeanUtil.copyProperties(questionAddDTO, question);
-        return questionMapper.insert(question);
+        int insert = questionMapper.insert(question);
+        if (insert <= 0) {
+            return false;
+        }
+        QuestionES questionES = new QuestionES();
+        BeanUtil.copyProperties(question, questionES);
+        questionRepository.save(questionES);
+        questionCacheManager.addCache(question.getQuestionId());
+        return true;
     }
 
     @Override
@@ -84,6 +107,9 @@ public class QuestionServiceImpl implements IQuestionService {
         oldQuestion.setQuestionCase(questionEditDTO.getQuestionCase());
         oldQuestion.setDefaultCode(questionEditDTO.getDefaultCode());
         oldQuestion.setMainFuc(questionEditDTO.getMainFuc());
+        QuestionES questionES = new QuestionES();
+        BeanUtil.copyProperties(oldQuestion, questionES);
+        questionRepository.save(questionES);
         return questionMapper.updateById(oldQuestion);
     }
 
@@ -93,6 +119,8 @@ public class QuestionServiceImpl implements IQuestionService {
         if (question == null) {
             throw new ServiceException(ResultCode.FAILED_NOT_EXISTS);
         }
+        questionRepository.deleteById(questionId);
+        questionCacheManager.deleteCache(questionId);
         return questionMapper.deleteById(questionId);
     }
 }

@@ -54,17 +54,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
 
     @Override
     public String add(ExamAddDTO examAddDTO) {
-        List<Exam> examList = examMapper
-                .selectList(new LambdaQueryWrapper<Exam>().eq(Exam::getTitle, examAddDTO.getTitle()));
-        if (CollectionUtil.isNotEmpty(examList)) {
-            throw new ServiceException(ResultCode.FAILED_ALREADY_EXISTS);
-        }
-        if (examAddDTO.getStartTime().isBefore(LocalDateTime.now())) {
-            throw new ServiceException(ResultCode.EXAM_START_TIME_BEFORE_CURRENT_TIME);  //竞赛开始时间不能早于当前时间
-        }
-        if (examAddDTO.getStartTime().isAfter(examAddDTO.getEndTime())) {
-            throw new ServiceException(ResultCode.EXAM_START_TIME_AFTER_END_TIME);
-        }
+        checkExamSaveParams(examAddDTO, null);
         Exam exam = new Exam();
         BeanUtil.copyProperties(examAddDTO, exam);
         examMapper.insert(exam);
@@ -123,6 +113,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     @Override
     public int edit(ExamEditDTO examEditDTO) {
         Exam exam = getExam(examEditDTO.getExamId());
+        if (Constants.TRUE.equals(exam.getStatus())) {
+            throw new ServiceException(ResultCode.EXAM_IS_PUBLISH);
+        }
         checkExam(exam);
         checkExamSaveParams(examEditDTO, examEditDTO.getExamId());
         exam.setTitle(examEditDTO.getTitle());
@@ -134,6 +127,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     @Override
     public int delete(Long examId) {
         Exam exam = getExam(examId);
+        if (Constants.TRUE.equals(exam.getStatus())) {
+            throw new ServiceException(ResultCode.EXAM_IS_PUBLISH);
+        }
         checkExam(exam);
         examQuestionMapper.delete(new LambdaQueryWrapper<ExamQuestion>()
                 .eq(ExamQuestion::getExamId, examId));
