@@ -1,6 +1,14 @@
-server:
-  port: 9204
-
 spring:
   application:
     name: oj-judge
+  profiles:
+    active: local
+  cloud:
+    nacos:
+      discovery:
+        namespace: 6542ae62-388a-43ce-ae7a-97d04b9dd530
+        server-addr: http://159.75.127.9:8848
+      config:
+        namespace: 6542ae62-388a-43ce-ae7a-97d04b9dd530
+        server-addr: http://159.75.127.9:8848
+        file-extension: yaml
