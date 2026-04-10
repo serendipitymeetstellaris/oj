@@ -27,4 +27,6 @@ public class CacheConstants {
     public static final String USER_UPLOAD_TIMES_KEY = "u:u:t";
 
     public static final String QUESTION_LIST = "q:l";
+
+    public static final String EXAM_QUESTION_LIST = "e:q:l:";
 }

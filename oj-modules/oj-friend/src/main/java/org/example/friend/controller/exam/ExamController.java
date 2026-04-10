@@ -1,6 +1,7 @@
 package org.example.friend.controller.exam;
 
 import org.example.common.core.controller.BaseController;
+import org.example.common.core.domain.R;
 import org.example.common.core.domain.TableDataInfo;
 import org.example.friend.domain.exam.dto.ExamQueryDTO;
 import org.example.friend.service.exam.IExamService;
@@ -25,5 +26,22 @@ public class ExamController  extends BaseController {
     @GetMapping("/semiLogin/redis/list")
     public TableDataInfo redisList(ExamQueryDTO examQueryDTO) {
         return examService.redisList(examQueryDTO);
+    }
+
+    @GetMapping("/getFirstQuestion")
+    public R<String> getFirstQuestion(Long examId) {
+        // 代码逻辑： 获取竞赛中题目的顺序列表   先从redis  redis中没有数据查询数据库  list  数据类型  key: e:q:l:examId   value : questionId
+        // 排在第一个的题目  返回给前端
+        return R.ok(examService.getFirstQuestion(examId));
+    }
+
+    @GetMapping("/preQuestion")
+    public R<String> preQuestion(Long examId, Long questionId) {
+        return R.ok(examService.preQuestion(examId, questionId));
+    }
+
+    @GetMapping("/nextQuestion")
+    public R<String> nextQuestion(Long examId, Long questionId) {
+        return R.ok(examService.nextQuestion(examId, questionId));
     }
 }

@@ -65,6 +65,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     public boolean questionAdd(ExamQuestAddDTO examQuestAddDTO) {
         Exam exam = getExam(examQuestAddDTO.getExamId());
         checkExam(exam);
+        if (Constants.TRUE.equals(exam.getStatus())) {
+            throw new ServiceException(ResultCode.EXAM_IS_PUBLISH);
+        }
         Set<Long> questionIdSet = examQuestAddDTO.getQuestionIdSet();
         if (CollectionUtil.isEmpty(questionIdSet)) {
             return true;
@@ -80,6 +83,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     public int questionDelete(Long examId, Long questionId) {
         Exam exam = getExam(examId);
         checkExam(exam);
+        if (Constants.TRUE.equals(exam.getStatus())) {
+            throw new ServiceException(ResultCode.EXAM_IS_PUBLISH);
+        }
         return examQuestionMapper.delete(new LambdaQueryWrapper<ExamQuestion>()
                 .eq(ExamQuestion::getExamId, examId)
                 .eq(ExamQuestion::getQuestionId, questionId));

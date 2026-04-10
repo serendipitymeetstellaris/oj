@@ -34,7 +34,7 @@ public class ExamServiceImpl implements IExamService {
     @Override
     public TableDataInfo redisList(ExamQueryDTO examQueryDTO) {
         //从redis当中获取  竞赛列表的数据
-        Long total = examCacheManager.getListSize(examQueryDTO.getType(), null, examQueryDTO);
+        Long total = examCacheManager.getListSize(examQueryDTO.getType(), null);
         List<ExamVO> examVOList;
         if (total == null || total <= 0) {
             examVOList = list(examQueryDTO);
@@ -42,13 +42,31 @@ public class ExamServiceImpl implements IExamService {
             total = new PageInfo<>(examVOList).getTotal();
         } else {
             examVOList = examCacheManager.getExamVOList(examQueryDTO, null);
-            total = examCacheManager.getListSize(examQueryDTO.getType(), null, examQueryDTO);
+            total = examCacheManager.getListSize(examQueryDTO.getType(), null);
         }
         if (CollectionUtil.isEmpty(examVOList)) {
             return TableDataInfo.empty();
         }
         assembleExamVOList(examVOList);
         return TableDataInfo.success(examVOList, total);
+    }
+
+    @Override
+    public String getFirstQuestion(Long examId) {
+        checkAndRefresh(examId);
+        return examCacheManager.getFirstQuestion(examId).toString();
+    }
+
+    @Override
+    public String preQuestion(Long examId, Long questionId) {
+        checkAndRefresh(examId);
+        return examCacheManager.preQuestion(examId, questionId).toString();
+    }
+
+    @Override
+    public String nextQuestion(Long examId, Long questionId) {
+        checkAndRefresh(examId);
+        return examCacheManager.nextQuestion(examId, questionId).toString();
     }
 
     private void assembleExamVOList(List<ExamVO> examVOList) {
@@ -61,6 +79,13 @@ public class ExamServiceImpl implements IExamService {
             if (userExamIdList.contains(examVO.getExamId())) {
                 examVO.setEnter(true);
             }
+        }
+    }
+
+    private void checkAndRefresh(Long examId) {
+        Long listSize = examCacheManager.getExamQuestionListSize(examId);
+        if (listSize == null || listSize <= 0) {
+            examCacheManager.refreshExamQuestionCache(examId);
         }
     }
 }
