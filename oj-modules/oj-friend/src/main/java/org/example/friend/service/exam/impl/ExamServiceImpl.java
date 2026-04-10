@@ -34,7 +34,7 @@ public class ExamServiceImpl implements IExamService {
     @Override
     public TableDataInfo redisList(ExamQueryDTO examQueryDTO) {
         //从redis当中获取  竞赛列表的数据
-        Long total = examCacheManager.getListSize(examQueryDTO.getType(), null);
+        Long total = examCacheManager.getListSize(examQueryDTO.getType(), null, examQueryDTO);
         List<ExamVO> examVOList;
         if (total == null || total <= 0) {
             examVOList = list(examQueryDTO);
@@ -42,7 +42,7 @@ public class ExamServiceImpl implements IExamService {
             total = new PageInfo<>(examVOList).getTotal();
         } else {
             examVOList = examCacheManager.getExamVOList(examQueryDTO, null);
-            total = examCacheManager.getListSize(examQueryDTO.getType(), null);
+            total = examCacheManager.getListSize(examQueryDTO.getType(), null, examQueryDTO);
         }
         if (CollectionUtil.isEmpty(examVOList)) {
             return TableDataInfo.empty();

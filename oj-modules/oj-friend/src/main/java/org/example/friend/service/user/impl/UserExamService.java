@@ -74,7 +74,7 @@ public class UserExamService implements IUserExamService {
     public TableDataInfo list(ExamQueryDTO examQueryDTO) {
         Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
         examQueryDTO.setType(ExamListType.USER_EXAM_LIST.getValue());
-        Long total = examCacheManager.getListSize(ExamListType.USER_EXAM_LIST.getValue(), userId, new ExamQueryDTO());
+        Long total = examCacheManager.getListSize(ExamListType.USER_EXAM_LIST.getValue(), userId, examQueryDTO);
         List<ExamVO> examVOList;
         if (total == null || total <= 0) {
             //从数据库中查询我的竞赛列表
@@ -84,7 +84,7 @@ public class UserExamService implements IUserExamService {
             total = new PageInfo<>(examVOList).getTotal();
         } else {
             examVOList = examCacheManager.getExamVOList(examQueryDTO, userId);
-            total = examCacheManager.getListSize(examQueryDTO.getType(), userId, new ExamQueryDTO());
+            total = examCacheManager.getListSize(examQueryDTO.getType(), userId, examQueryDTO);
         }
         if (CollectionUtil.isEmpty(examVOList)) {
             return TableDataInfo.empty();

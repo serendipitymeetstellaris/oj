@@ -46,8 +46,9 @@ public class ExamCacheManager {
     @Autowired
     private RedisService redisService;
 
-    public Long getListSize(Integer examListType, Long userId) {
+    public Long getListSize(Integer examListType, Long userId, ExamQueryDTO examQueryDTO) {
         String examListKey = getExamListKey(examListType, userId);
+        examListKey = examListKey + examQueryDTO.getStartTime() + examQueryDTO.getEndTime();
         return redisService.getListSize(examListKey);
     }
 
