@@ -1,9 +1,12 @@
 package org.example.common.security.interceptor;
 
 import cn.hutool.core.util.StrUtil;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.common.core.constants.Constants;
 import org.example.common.core.constants.HttpConstants;
+import org.example.common.core.utils.ThreadLocalUtil;
 import org.example.common.security.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +25,18 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = getToken(request);  //请求头中获取token
-        tokenService.extendToken(token, secret);
+        Claims claims = tokenService.getClaims(token, secret);
+        Long userId = tokenService.getUserId(claims);
+        ThreadLocalUtil.set(Constants.USER_ID, userId);
+        tokenService.extendToken(claims);
         return true;
     }
 
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+            throws Exception {
+        ThreadLocalUtil.remove();
+    }
 
     private String getToken(HttpServletRequest request) {
         String token = request.getHeader(HttpConstants.AUTHENTICATION);

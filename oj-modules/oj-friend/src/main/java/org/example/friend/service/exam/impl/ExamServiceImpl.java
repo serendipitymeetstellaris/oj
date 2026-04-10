@@ -3,10 +3,12 @@ package org.example.friend.service.exam.impl;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.example.common.core.constants.Constants;
 import org.example.common.core.domain.TableDataInfo;
+import org.example.common.core.utils.ThreadLocalUtil;
 import org.example.friend.domain.exam.dto.ExamQueryDTO;
 import org.example.friend.domain.exam.vo.ExamVO;
-import org.example.friend.mannger.ExamCacheManager;
+import org.example.friend.manager.ExamCacheManager;
 import org.example.friend.mapper.exam.ExamMapper;
 import org.example.friend.service.exam.IExamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,19 +34,33 @@ public class ExamServiceImpl implements IExamService {
     @Override
     public TableDataInfo redisList(ExamQueryDTO examQueryDTO) {
         //从redis当中获取  竞赛列表的数据
-        Long total = examCacheManager.getListSize(examQueryDTO.getType());
+        Long total = examCacheManager.getListSize(examQueryDTO.getType(), null, examQueryDTO);
         List<ExamVO> examVOList;
         if (total == null || total <= 0) {
             examVOList = list(examQueryDTO);
-            examCacheManager.refreshCache(examQueryDTO.getType());
+            examCacheManager.refreshCache(examQueryDTO.getType(), null);
             total = new PageInfo<>(examVOList).getTotal();
         } else {
-            examVOList = examCacheManager.getExamVOList(examQueryDTO);
-            total = examCacheManager.getListSize(examQueryDTO.getType());
+            examVOList = examCacheManager.getExamVOList(examQueryDTO, null);
+            total = examCacheManager.getListSize(examQueryDTO.getType(), null, examQueryDTO);
         }
         if (CollectionUtil.isEmpty(examVOList)) {
             return TableDataInfo.empty();
         }
+        assembleExamVOList(examVOList);
         return TableDataInfo.success(examVOList, total);
+    }
+
+    private void assembleExamVOList(List<ExamVO> examVOList) {
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        List<Long> userExamIdList = examCacheManager.getAllUserExamList(userId);
+        if (CollectionUtil.isEmpty(userExamIdList)) {
+            return;
+        }
+        for (ExamVO examVO : examVOList) {
+            if (userExamIdList.contains(examVO.getExamId())) {
+                examVO.setEnter(true);
+            }
+        }
     }
 }

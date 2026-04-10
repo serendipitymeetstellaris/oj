@@ -1,0 +1,94 @@
+package org.example.friend.service.user.impl;
+
+import cn.hutool.core.collection.CollectionUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.example.common.core.constants.Constants;
+import org.example.common.core.domain.TableDataInfo;
+import org.example.common.core.enums.ExamListType;
+import org.example.common.core.enums.ResultCode;
+import org.example.common.core.utils.ThreadLocalUtil;
+import org.example.common.security.exception.ServiceException;
+import org.example.common.security.service.TokenService;
+import org.example.friend.domain.exam.Exam;
+import org.example.friend.domain.exam.dto.ExamQueryDTO;
+import org.example.friend.domain.exam.vo.ExamVO;
+import org.example.friend.domain.user.UserExam;
+import org.example.friend.manager.ExamCacheManager;
+import org.example.friend.mapper.exam.ExamMapper;
+import org.example.friend.mapper.user.UserExamMapper;
+import org.example.friend.service.user.IUserExamService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class UserExamService implements IUserExamService {
+
+    @Autowired
+    private ExamMapper examMapper;
+
+    @Autowired
+    private UserExamMapper userExamMapper;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private ExamCacheManager examCacheManager;
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Override
+    public int enter(String token, Long examId) {
+        Exam exam = examMapper.selectById(examId);
+        if (exam == null) {
+            throw new ServiceException(ResultCode.FAILED_NOT_EXISTS);
+        }
+        if(exam.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new ServiceException(ResultCode.EXAM_STARTED);
+        }
+//        Long userId = tokenService.getUserId(token, secret);
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        UserExam userExam = userExamMapper.selectOne(new LambdaQueryWrapper<UserExam>()
+                .eq(UserExam::getExamId, examId)
+                .eq(UserExam::getUserId, userId));
+        if (userExam != null) {
+            throw new ServiceException(ResultCode.USER_EXAM_HAS_ENTER);
+        }
+        examCacheManager.addUserExamCache(userId, examId);
+        userExam = new UserExam();
+        userExam.setExamId(examId);
+        userExam.setUserId(userId);
+        return userExamMapper.insert(userExam);
+    }
+
+    //先查询缓存（u:e:l:用户id）  如果缓存能够查询到
+    //如果查询不到   数据库当中再去查询  并且将数据库中的数据同步给redis
+    @Override
+    public TableDataInfo list(ExamQueryDTO examQueryDTO) {
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        examQueryDTO.setType(ExamListType.USER_EXAM_LIST.getValue());
+        Long total = examCacheManager.getListSize(ExamListType.USER_EXAM_LIST.getValue(), userId, new ExamQueryDTO());
+        List<ExamVO> examVOList;
+        if (total == null || total <= 0) {
+            //从数据库中查询我的竞赛列表
+            PageHelper.startPage(examQueryDTO.getPageNum(), examQueryDTO.getPageSize());
+            examVOList = userExamMapper.selectUserExamList(userId);
+            examCacheManager.refreshCache(ExamListType.USER_EXAM_LIST.getValue(), userId);
+            total = new PageInfo<>(examVOList).getTotal();
+        } else {
+            examVOList = examCacheManager.getExamVOList(examQueryDTO, userId);
+            total = examCacheManager.getListSize(examQueryDTO.getType(), userId, new ExamQueryDTO());
+        }
+        if (CollectionUtil.isEmpty(examVOList)) {
+            return TableDataInfo.empty();
+        }
+        return TableDataInfo.success(examVOList, total);
+    }
+}

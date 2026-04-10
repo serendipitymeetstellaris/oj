@@ -32,6 +32,7 @@ public class ExamXxlJob {
     @XxlJob("examListOrganizeHandler")
     public void examListOrganizeHandler() {
         //  统计哪些竞赛应该存入未完赛的列表中  哪些竞赛应该存入历史竞赛列表中   统计出来了之后，再存入对应的缓存中
+        log.info("*** examListOrganizeHandler ***");
         List<Exam> unFinishList = examMapper.selectList(new LambdaQueryWrapper<Exam>()
                 .select(Exam::getExamId, Exam::getTitle, Exam::getStartTime, Exam::getEndTime)
                 .gt(Exam::getEndTime, LocalDateTime.now())
@@ -44,7 +45,8 @@ public class ExamXxlJob {
                 .le(Exam::getEndTime, LocalDateTime.now())
                 .eq(Exam::getStatus, Constants.TRUE)
                 .orderByDesc(Exam::getCreateTime));
-        refreshCache(historyList, CacheConstants.EXAM_UNFINISHED_LIST);
+
+        refreshCache(historyList, CacheConstants.EXAM_HISTORY_LIST);
     }
 
 
