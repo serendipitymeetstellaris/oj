@@ -64,6 +64,9 @@ public class UserServiceImpl implements IUserService {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${file.oss.downloadUrl}")
+    private String downloadUrl;
+
     @Override
     public boolean sendCode(UserDTO userDTO) {
         if (!checkPhone(userDTO.getPhone())) {
@@ -102,7 +105,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String codeLogin(String phone, String code) {
-//        checkCode(phone, code);
+        //checkCode(phone, code);
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getPhone, phone));
         if (user == null) {  //新用户
             //注册逻辑
@@ -128,6 +131,31 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public boolean logout(String token) {
+        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
+            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
+        }
+        return tokenService.deleteLoginUser(token, secret);
+    }
+
+    @Override
+    public R<LoginUserVO> info(String token) {
+        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
+            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
+        }
+        LoginUser loginUser = tokenService.getLoginUser(token, secret);
+        if (loginUser == null) {
+            return R.fail();
+        }
+        LoginUserVO loginUserVO = new LoginUserVO();
+        loginUserVO.setNickName(loginUser.getNickName());
+        if (StrUtil.isNotEmpty(loginUser.getHeadImage())) {
+            loginUserVO.setHeadImage(downloadUrl + loginUser.getHeadImage());
+        }
+        return R.ok(loginUserVO);
+    }
+
+    @Override
     public UserVO detail() {
         Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
         if (userId == null) {
@@ -136,6 +164,9 @@ public class UserServiceImpl implements IUserService {
         UserVO userVO = userCacheManager.getUserById(userId);
         if (userVO == null) {
             throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        if (StrUtil.isNotEmpty(userVO.getHeadImage())) {
+            userVO.setHeadImage(downloadUrl + userVO.getHeadImage());
         }
         return userVO;
     }
@@ -165,6 +196,24 @@ public class UserServiceImpl implements IUserService {
         return userMapper.updateById(user);
     }
 
+    @Override
+    public int updateHeadImage(String headImage) {
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        if (userId == null) {
+            throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        user.setHeadImage(headImage);
+        //更新用户缓存
+        userCacheManager.refreshUser(user);
+        tokenService.refreshLoginUser(user.getNickName(),user.getHeadImage(),
+                ThreadLocalUtil.get(Constants.USER_KEY, String.class));
+        return userMapper.updateById(user);
+    }
+
     private void checkCode(String phone, String code) {
         String phoneCodeKey = getPhoneCodeKey(phone);
         String cacheCode = redisService.getCacheObject(phoneCodeKey, String.class);
@@ -176,29 +225,6 @@ public class UserServiceImpl implements IUserService {
         }
         //验证码比对成功
         redisService.deleteObject(phoneCodeKey);
-    }
-
-    @Override
-    public boolean logout(String token) {
-        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
-            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
-        }
-        return tokenService.deleteLoginUser(token, secret);
-    }
-
-    @Override
-    public R<LoginUserVO> info(String token) {
-        if (StrUtil.isNotEmpty(token) && token.startsWith(HttpConstants.PREFIX)) {
-            token = token.replaceFirst(HttpConstants.PREFIX, StrUtil.EMPTY);
-        }
-        LoginUser loginUser = tokenService.getLoginUser(token, secret);
-        if (loginUser == null) {
-            return R.fail();
-        }
-        LoginUserVO loginUserVO = new LoginUserVO();
-        loginUserVO.setNickName(loginUser.getNickName());
-        loginUserVO.setHeadImage(loginUser.getHeadImage());
-        return R.ok(loginUserVO);
     }
 
     public static boolean checkPhone(String phone) {
