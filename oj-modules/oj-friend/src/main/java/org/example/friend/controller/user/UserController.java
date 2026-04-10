@@ -5,6 +5,8 @@ import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.vo.LoginUserVO;
 import org.example.friend.domain.user.dto.UserDTO;
+import org.example.friend.domain.user.dto.UserUpdateDTO;
+import org.example.friend.domain.user.vo.UserVO;
 import org.example.friend.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +37,15 @@ public class UserController extends BaseController {
     @GetMapping("/info")
     public R<LoginUserVO> info(@RequestHeader(HttpConstants.AUTHENTICATION) String token) {
         return userService.info(token);
+    }
+
+    @GetMapping("/detail")
+    public R<UserVO> detail() {
+        return R.ok(userService.detail());
+    }
+
+    @PutMapping("/edit")
+    public R<Void> edit(@RequestBody UserUpdateDTO userUpdateDTO) {
+        return toR(userService.edit(userUpdateDTO));
     }
 }

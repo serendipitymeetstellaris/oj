@@ -12,12 +12,16 @@ import org.example.common.core.domain.vo.LoginUserVO;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.core.enums.UserIdentity;
 import org.example.common.core.enums.UserStatus;
+import org.example.common.core.utils.ThreadLocalUtil;
 import org.example.common.message.service.AliSmsService;
 import org.example.common.redis.service.RedisService;
 import org.example.common.security.exception.ServiceException;
 import org.example.common.security.service.TokenService;
 import org.example.friend.domain.user.User;
 import org.example.friend.domain.user.dto.UserDTO;
+import org.example.friend.domain.user.dto.UserUpdateDTO;
+import org.example.friend.domain.user.vo.UserVO;
+import org.example.friend.manager.UserCacheManager;
 import org.example.friend.mapper.user.UserMapper;
 import org.example.friend.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private UserCacheManager userCacheManager;
 
     @Value("${sms.code-expiration:5}")
     private Long phoneCodeExpiration;
@@ -118,6 +125,44 @@ public class UserServiceImpl implements IUserService {
 //            redisService.deleteObject(phoneCodeKey);
 //            return tokenService.createToken(user.getUserId(), secret, UserIdentity.ORDINARY.getValue(), user.getNickName());
 //        }
+    }
+
+    @Override
+    public UserVO detail() {
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        if (userId == null) {
+            throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        UserVO userVO = userCacheManager.getUserById(userId);
+        if (userVO == null) {
+            throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        return userVO;
+    }
+
+    @Override
+    public int edit(UserUpdateDTO userUpdateDTO) {
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        if (userId == null) {
+            throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new ServiceException(ResultCode.FAILED_USER_NOT_EXISTS);
+        }
+        user.setNickName(userUpdateDTO.getNickName());
+        user.setSex(userUpdateDTO.getSex());
+        user.setSchoolName(userUpdateDTO.getSchoolName());
+        user.setMajorName(userUpdateDTO.getMajorName());
+        user.setPhone(userUpdateDTO.getPhone());
+        user.setEmail(userUpdateDTO.getEmail());
+        user.setWechat(userUpdateDTO.getWechat());
+        user.setIntroduce(userUpdateDTO.getIntroduce());
+        //更新用户缓存
+        userCacheManager.refreshUser(user);
+        tokenService.refreshLoginUser(user.getNickName(),user.getHeadImage(),
+                ThreadLocalUtil.get(Constants.USER_KEY, String.class));
+        return userMapper.updateById(user);
     }
 
     private void checkCode(String phone, String code) {

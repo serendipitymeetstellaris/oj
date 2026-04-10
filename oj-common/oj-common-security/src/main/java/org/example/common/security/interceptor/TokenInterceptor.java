@@ -27,7 +27,9 @@ public class TokenInterceptor implements HandlerInterceptor {
         String token = getToken(request);  //请求头中获取token
         Claims claims = tokenService.getClaims(token, secret);
         Long userId = tokenService.getUserId(claims);
+        String userKey = tokenService.getUserKey(claims);
         ThreadLocalUtil.set(Constants.USER_ID, userId);
+        ThreadLocalUtil.set(Constants.USER_KEY, userKey);
         tokenService.extendToken(claims);
         return true;
     }
