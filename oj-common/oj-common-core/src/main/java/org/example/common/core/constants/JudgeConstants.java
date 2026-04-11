@@ -14,13 +14,15 @@ public class JudgeConstants {
 
     public static final String EXAM_CODE_DIR = "user-code";
 
+    public static final String CODE_DIR_POOL = "user-code-pool";
+
     public static final String DOCKER_USER_CODE_DIR = "/usr/share/java";
 
     public static final String USER_CODE_JAVA_CLASS_NAME = "Solution.java";
 
     public static final String USER_CODE_JAVA_FILE_NAME = "Solution";
 
-    public static final String JAVA_ENV_IMAGE = "openjdk:8-jdk-alpine";
+    public static final String JAVA_ENV_IMAGE = "eclipse-temurin:8-jdk-alpine";
 
     public static final String JAVA_CONTAINER_PREFIX = "/";
 

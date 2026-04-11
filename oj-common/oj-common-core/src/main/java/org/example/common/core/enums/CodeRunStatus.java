@@ -15,7 +15,11 @@ public enum CodeRunStatus {
 
     UNKNOWN_FAILED(5, "未知异常，请您稍后重试"),
 
-    COMPILE_FAILED(6, "编译失败");
+    COMPILE_FAILED(6, "编译失败"),
+
+    OUT_OF_MEMORY(7, "运行结果正确，但是超出空间限制"),
+
+    OUT_OF_TIME(8, "运行结果正确，但是超出时间限制");
 
     private Integer value;
 

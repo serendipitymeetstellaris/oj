@@ -1,4 +1,4 @@
-package org.example.friend.controller.file;
+package org.example.friend.controller.question.file;
 
 import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;

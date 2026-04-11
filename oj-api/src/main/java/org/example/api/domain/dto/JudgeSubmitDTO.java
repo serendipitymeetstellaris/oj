@@ -27,11 +27,12 @@ public class JudgeSubmitDTO {
     //空间限制 kb
     private Long spaceLimit;
 
-    //用户代码
+    //拼装完整的用户代码  用户提交的代码 + main函数
     private String userCode;
 
-    //题目用例
+    //输入数据
     private List<String> inputList;
 
+    //期望输出数据
     private List<String> outputList;
 }

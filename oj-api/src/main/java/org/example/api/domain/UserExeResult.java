@@ -9,7 +9,7 @@ public class UserExeResult {
 
     private String input;
 
-    private String expectOutPut;
+    private String output;   //期望输出
 
-    private String outPut;
+    private String exeOutput; //实际输出
 }

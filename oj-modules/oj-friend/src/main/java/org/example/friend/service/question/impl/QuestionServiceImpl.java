@@ -38,9 +38,10 @@ public class QuestionServiceImpl implements IQuestionService {
     @Override
     public TableDataInfo list(QuestionQueryDTO questionQueryDTO) {
         long count = questionRepository.count();
-        if (count <= 0) {
-            refreshQuestion();
-        }
+        refreshQuestion();
+//        if (count <= 0) {
+//            refreshQuestion();
+//        }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         Pageable pageable = PageRequest.of(questionQueryDTO.getPageNum() - 1, questionQueryDTO.getPageSize(), sort);
         Integer difficulty = questionQueryDTO.getDifficulty();

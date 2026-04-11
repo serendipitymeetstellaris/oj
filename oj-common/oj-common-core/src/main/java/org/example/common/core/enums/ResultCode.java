@@ -62,7 +62,9 @@ public enum ResultCode {
 
     FAILED_FILE_UPLOAD                  (3401, "文件上传失败"),
 
-    FAILED_FILE_UPLOAD_TIME_LIMIT       (3402, "当天上传图片数量超过上限");
+    FAILED_FILE_UPLOAD_TIME_LIMIT       (3402, "当天上传图片数量超过上限"),
+
+    FAILED_NOT_SUPPORT_PROGRAM          (3601, "当前不支持此语言");
 
     private int code;
 
