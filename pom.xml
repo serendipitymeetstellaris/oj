@@ -11,6 +11,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <module>oj-gateway</module>
         <module>oj-common/oj-common-file</module>
         <module>oj-api</module>
+        <module>oj-common/oj-common-rabbitmq</module>
     </modules>
 
     <parent>

@@ -23,6 +23,7 @@ import org.example.friend.domain.user.dto.UserUpdateDTO;
 import org.example.friend.domain.user.vo.UserVO;
 import org.example.friend.manager.UserCacheManager;
 import org.example.friend.mapper.user.UserMapper;
+import org.example.friend.mapper.user.UserSubmitMapper;
 import org.example.friend.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -14,20 +14,10 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
-
-        String userId = ThreadLocalUtil.get(Constants.USER_ID, String.class);
-        if (userId != null && !userId.trim().isEmpty()) {
-            this.strictInsertFill(metaObject, "createBy", Long.class, Long.valueOf(userId));
-        }
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
-
-        String userId = ThreadLocalUtil.get(Constants.USER_ID, String.class);
-        if (userId != null && !userId.trim().isEmpty()) {
-            this.strictUpdateFill(metaObject, "updateBy", Long.class, Long.valueOf(userId));
-        }
     }
 }

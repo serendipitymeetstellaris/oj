@@ -6,4 +6,6 @@ import org.example.friend.domain.user.dto.UserSubmitDTO;
 
 public interface IUserQuestionService {
     R<UserQuestionResultVO> submit(UserSubmitDTO submitDTO);
+
+    UserQuestionResultVO exeResult(Long examId, Long questionId, String currentTime);
 }

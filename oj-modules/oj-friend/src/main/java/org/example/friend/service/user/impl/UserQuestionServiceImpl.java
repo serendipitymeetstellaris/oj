@@ -1,22 +1,28 @@
 package org.example.friend.service.user.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import org.example.api.RemoteJudgeService;
+import org.example.api.domain.UserExeResult;
 import org.example.api.domain.dto.JudgeSubmitDTO;
 import org.example.api.domain.vo.UserQuestionResultVO;
 import org.example.common.core.constants.Constants;
 import org.example.common.core.domain.R;
 import org.example.common.core.enums.ProgramType;
+import org.example.common.core.enums.QuestionResType;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.core.utils.ThreadLocalUtil;
 import org.example.common.security.exception.ServiceException;
 import org.example.friend.domain.question.Question;
 import org.example.friend.domain.question.QuestionCase;
 import org.example.friend.domain.question.es.QuestionES;
+import org.example.friend.domain.user.UserSubmit;
 import org.example.friend.domain.user.dto.UserSubmitDTO;
 import org.example.friend.elasticsearch.QuestionRepository;
 import org.example.friend.mapper.question.QuestionMapper;
+import org.example.friend.mapper.user.UserSubmitMapper;
 import org.example.friend.service.user.IUserQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +41,9 @@ public class UserQuestionServiceImpl implements IUserQuestionService {
     @Autowired
     private RemoteJudgeService remoteJudgeService;
 
+    @Autowired
+    private UserSubmitMapper userSubmitMapper;
+
     @Override
     public R<UserQuestionResultVO> submit(UserSubmitDTO submitDTO) {
         Integer programType = submitDTO.getProgramType();
@@ -44,6 +53,23 @@ public class UserQuestionServiceImpl implements IUserQuestionService {
             return remoteJudgeService.doJudgeJavaCode(judgeSubmitDTO);
         }
         throw new ServiceException(ResultCode.FAILED_NOT_SUPPORT_PROGRAM);
+    }
+
+    @Override
+    public UserQuestionResultVO exeResult(Long examId, Long questionId, String currentTime) {
+        Long userId = ThreadLocalUtil.get(Constants.USER_ID, Long.class);
+        UserSubmit userSubmit = userSubmitMapper.selectCurrentUserSubmit(userId, examId, questionId, currentTime);
+        UserQuestionResultVO resultVO = new UserQuestionResultVO();
+        if (userSubmit == null) {
+            resultVO.setPass(QuestionResType.IN_JUDGE.getValue());
+        } else {
+            resultVO.setPass(userSubmit.getPass());
+            resultVO.setExeMessage(userSubmit.getExeMessage());
+            if (StrUtil.isNotEmpty(userSubmit.getCaseJudgeRes())) {
+                resultVO.setUserExeResultList(JSON.parseArray(userSubmit.getCaseJudgeRes(), UserExeResult.class));
+            }
+        }
+        return resultVO;
     }
 
     private JudgeSubmitDTO assembleJudgeSubmitDTO(UserSubmitDTO submitDTO) {
