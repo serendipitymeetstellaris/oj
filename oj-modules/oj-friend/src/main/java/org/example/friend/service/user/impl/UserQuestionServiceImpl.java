@@ -23,6 +23,7 @@ import org.example.friend.domain.user.dto.UserSubmitDTO;
 import org.example.friend.elasticsearch.QuestionRepository;
 import org.example.friend.mapper.question.QuestionMapper;
 import org.example.friend.mapper.user.UserSubmitMapper;
+import org.example.friend.rabbitmq.JudgeProducer;
 import org.example.friend.service.user.IUserQuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,9 @@ public class UserQuestionServiceImpl implements IUserQuestionService {
 
     @Autowired
     private UserSubmitMapper userSubmitMapper;
+
+    @Autowired
+    private JudgeProducer judgeProducer;
 
     @Override
     public R<UserQuestionResultVO> submit(UserSubmitDTO submitDTO) {
@@ -70,6 +74,18 @@ public class UserQuestionServiceImpl implements IUserQuestionService {
             }
         }
         return resultVO;
+    }
+
+    @Override
+    public boolean rabbitSubmit(UserSubmitDTO submitDTO) {
+        Integer programType = submitDTO.getProgramType();
+        if (ProgramType.JAVA.getValue().equals(programType)) {
+            //按照java逻辑处理
+            JudgeSubmitDTO judgeSubmitDTO = assembleJudgeSubmitDTO(submitDTO);
+            judgeProducer.produceMsg(judgeSubmitDTO);
+            return true;
+        }
+        throw new ServiceException(ResultCode.FAILED_NOT_SUPPORT_PROGRAM);
     }
 
     private JudgeSubmitDTO assembleJudgeSubmitDTO(UserSubmitDTO submitDTO) {

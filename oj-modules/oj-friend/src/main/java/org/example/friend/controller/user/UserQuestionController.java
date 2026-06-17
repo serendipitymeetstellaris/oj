@@ -15,10 +15,14 @@ public class UserQuestionController extends BaseController {
     @Autowired
     private IUserQuestionService userQuestionService;
 
-    //用户代码提交   请求方法  地址  参数  响应数据结构
     @PostMapping("/submit")
     public R<UserQuestionResultVO> submit(@RequestBody UserSubmitDTO submitDTO) {
         return userQuestionService.submit(submitDTO);
+    }
+
+    @PostMapping("/rabbit/submit")
+    public R<Void> rabbitSubmit(@RequestBody UserSubmitDTO submitDTO) {
+        return toR(userQuestionService.rabbitSubmit(submitDTO));
     }
 
     @GetMapping("/exe/result")
