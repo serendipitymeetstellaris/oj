@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import org.example.common.core.constants.CacheConstants;
 import org.example.common.core.constants.Constants;
+import org.example.common.core.domain.dto.ExamRankDTO;
+import org.example.common.core.domain.vo.ExamRankVO;
 import org.example.common.core.enums.ExamListType;
 import org.example.common.core.enums.ResultCode;
 import org.example.common.redis.service.RedisService;
@@ -57,6 +59,10 @@ public class ExamCacheManager {
         return redisService.getListSize(examQuestionListKey);
     }
 
+    public Long getRankListSize(Long examId) {
+        return redisService.getListSize(getExamRankListKey(examId));
+    }
+
     public List<ExamVO> getExamVOList(ExamQueryDTO examQueryDTO, Long userId) {
         int start = (examQueryDTO.getPageNum() - 1) * examQueryDTO.getPageSize();
         int end = start + examQueryDTO.getPageSize() - 1; //下标需要 -1
@@ -69,6 +75,12 @@ public class ExamCacheManager {
             refreshCache(examQueryDTO.getType(), userId);
         }
         return examVOList;
+    }
+
+    public List<ExamRankVO> getExamRankList(ExamRankDTO examRankDTO) {
+        int start = (examRankDTO.getPageNum() - 1) * examRankDTO.getPageSize();
+        int end = start + examRankDTO.getPageSize() - 1; //下标需要 -1
+        return redisService.getCacheListByRange(getExamRankListKey(examRankDTO.getExamId()), start, end, ExamRankVO.class);
     }
 
     public List<Long> getAllUserExamList(Long userId) {
@@ -164,6 +176,14 @@ public class ExamCacheManager {
         redisService.expire(getExamQuestionListKey(examId), seconds, TimeUnit.SECONDS);
     }
 
+    public void refreshExamRankCache(Long examId) {
+        List<ExamRankVO> examRankVOList = userExamMapper.selectExamRankList(examId);
+        if (CollectionUtil.isEmpty(examRankVOList)) {
+            return;
+        }
+        redisService.rightPushAll(getExamRankListKey(examId), examRankVOList);
+    }
+
     private List<ExamVO> getExamListByDB(ExamQueryDTO examQueryDTO, Long userId) {
         PageHelper.startPage(examQueryDTO.getPageNum(), examQueryDTO.getPageSize());
         if (ExamListType.USER_EXAM_LIST.getValue().equals(examQueryDTO.getType())) {
@@ -214,5 +234,9 @@ public class ExamCacheManager {
 
     private String getExamQuestionListKey(Long examId) {
         return CacheConstants.EXAM_QUESTION_LIST + examId;
+    }
+
+    private String getExamRankListKey(Long examId) {
+        return CacheConstants.EXAM_RANK_LIST + examId;
     }
 }

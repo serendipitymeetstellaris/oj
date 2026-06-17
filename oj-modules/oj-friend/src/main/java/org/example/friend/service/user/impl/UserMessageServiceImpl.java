@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.example.common.core.constants.Constants;
-import org.example.common.core.domain.PageQueryDTO;
+import org.example.common.core.domain.dto.PageQueryDTO;
 import org.example.common.core.domain.TableDataInfo;
 import org.example.common.core.utils.ThreadLocalUtil;
 import org.example.friend.domain.message.vo.MessageTextVO;

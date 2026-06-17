@@ -1,7 +1,7 @@
 package org.example.friend.controller.user;
 
 import org.example.common.core.controller.BaseController;
-import org.example.common.core.domain.PageQueryDTO;
+import org.example.common.core.domain.dto.PageQueryDTO;
 import org.example.common.core.domain.TableDataInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -46,6 +46,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamQuestionMapper, ExamQuestio
     @Autowired
     private ExamCacheManager examCacheManager;
 
+    @Autowired
+    private UserCacheManager userCacheManager;
+
+    @Autowired
+    private UserExamMapper userExamMapper;
+
     @Override
     public List<ExamVO> list(ExamQueryDTO examQueryDTO) {
         PageHelper.startPage(examQueryDTO.getPageNum(), examQueryDTO.getPageSize());

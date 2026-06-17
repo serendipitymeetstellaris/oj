@@ -1,4 +1,4 @@
-package org.example.common.core.domain;
+package org.example.common.core.domain.dto;
 
 import lombok.Getter;
 import lombok.Setter;

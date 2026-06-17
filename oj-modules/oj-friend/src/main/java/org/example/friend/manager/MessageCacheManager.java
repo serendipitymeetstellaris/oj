@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.PageHelper;
 import org.example.common.core.constants.CacheConstants;
-import org.example.common.core.domain.PageQueryDTO;
+import org.example.common.core.domain.dto.PageQueryDTO;
 import org.example.common.redis.service.RedisService;
 import org.example.friend.domain.message.vo.MessageTextVO;
 import org.example.friend.mapper.message.MessageTextMapper;

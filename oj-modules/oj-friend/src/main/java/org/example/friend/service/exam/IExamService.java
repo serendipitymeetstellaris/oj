@@ -1,6 +1,7 @@
 package org.example.friend.service.exam;
 
 import org.example.common.core.domain.TableDataInfo;
+import org.example.common.core.domain.dto.ExamRankDTO;
 import org.example.friend.domain.exam.dto.ExamQueryDTO;
 import org.example.friend.domain.exam.vo.ExamVO;
 
@@ -11,6 +12,8 @@ public interface IExamService {
     List<ExamVO> list(ExamQueryDTO examQueryDTO);
 
     TableDataInfo redisList(ExamQueryDTO examQueryDTO);
+
+    TableDataInfo rankList(ExamRankDTO examRankDTO);
 
     String getFirstQuestion(Long examId);
 

@@ -3,6 +3,7 @@ package org.example.friend.controller.exam;
 import org.example.common.core.controller.BaseController;
 import org.example.common.core.domain.R;
 import org.example.common.core.domain.TableDataInfo;
+import org.example.common.core.domain.dto.ExamRankDTO;
 import org.example.friend.domain.exam.dto.ExamQueryDTO;
 import org.example.friend.service.exam.IExamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,13 @@ public class ExamController  extends BaseController {
         return examService.redisList(examQueryDTO);
     }
 
+    @GetMapping("/rank/list")
+    public TableDataInfo rankList(ExamRankDTO examRankDTO) {
+        return examService.rankList(examRankDTO);
+    }
+
     @GetMapping("/getFirstQuestion")
     public R<String> getFirstQuestion(Long examId) {
-        // 代码逻辑： 获取竞赛中题目的顺序列表   先从redis  redis中没有数据查询数据库  list  数据类型  key: e:q:l:examId   value : questionId
-        // 排在第一个的题目  返回给前端
         return R.ok(examService.getFirstQuestion(examId));
     }
 

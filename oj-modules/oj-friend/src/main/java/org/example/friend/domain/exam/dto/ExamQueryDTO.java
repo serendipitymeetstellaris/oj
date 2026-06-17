@@ -3,7 +3,7 @@ package org.example.friend.domain.exam.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-import org.example.common.core.domain.PageQueryDTO;
+import org.example.common.core.domain.dto.PageQueryDTO;
 
 @Getter
 @Setter

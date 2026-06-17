@@ -12,4 +12,6 @@ public class UserScore {
     private Long userId;
 
     private int score;
+
+    private int examRank;
 }

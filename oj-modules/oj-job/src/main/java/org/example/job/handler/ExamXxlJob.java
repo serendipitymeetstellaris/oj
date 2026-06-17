@@ -15,6 +15,7 @@ import org.example.job.domain.message.vo.MessageTextVO;
 import org.example.job.domain.user.UserScore;
 import org.example.job.mapper.exam.ExamMapper;
 import org.example.job.mapper.message.MessageTextMapper;
+import org.example.job.mapper.user.UserExamMapper;
 import org.example.job.mapper.user.UserSubmitMapper;
 import org.example.job.service.IMessageService;
 import org.example.job.service.IMessageTextService;
@@ -52,6 +53,8 @@ public class ExamXxlJob {
     @Autowired
     private MessageTextMapper messageTextMapper;
 
+    @Autowired
+    private UserExamMapper userExamMapper;
 
     @XxlJob("examListOrganizeHandler")
     public void examListOrganizeHandler() {
@@ -104,6 +107,7 @@ public class ExamXxlJob {
                 String msgTitle =  exam.getTitle() + "——排名情况";
                 String msgContent = "您所参与的竞赛：" + exam.getTitle()
                         + "，本次参与竞赛一共" + totalUser + "人， 您排名第"  + examRank + "名！";
+                userScore.setExamRank(examRank);
                 MessageText messageText = new MessageText();
                 messageText.setMessageTitle(msgTitle);
                 messageText.setMessageContent(msgContent);
@@ -116,6 +120,8 @@ public class ExamXxlJob {
                 messageList.add(message);
                 examRank++;
             }
+            userExamMapper.updateUserScoreAndRank(userScoreList);
+            redisService.rightPushAll(getExamRankListKey(examId), userScoreList);
         }
         messageTextService.batchInsert(messageTextList);
         Map<String, MessageTextVO> messageTextVOMap = new HashMap<>();
@@ -169,5 +175,9 @@ public class ExamXxlJob {
 
     private String getMsgDetailKey(Long textId) {
         return CacheConstants.MESSAGE_DETAIL + textId;
+    }
+
+    private String getExamRankListKey(Long examId) {
+        return CacheConstants.EXAM_RANK_LIST + examId;
     }
 }
